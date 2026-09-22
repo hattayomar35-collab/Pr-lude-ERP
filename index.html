@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f7fb" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23155eef'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36' fill='white'%3Eس%3C/text%3E%3C/svg%3E" />
+  <title>السريحي ERP</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="rtl-fixes.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">س</div>
+        <div><strong>السريحي ERP</strong><span>إدارة التوزيع والمبيعات</span></div>
+      </div>
+      <div class="sidebar-label">الرئيسية</div>
+      <nav class="nav-list" id="mainNav">
+        <button class="nav-item active" data-section="dashboard"><span>⌂</span> لوحة التحكم</button>
+        <button class="nav-item" data-section="products"><span>▦</span> الأصناف</button>
+        <button class="nav-item" data-section="warehouses"><span>⌑</span> المستودعات</button>
+        <button class="nav-item" data-section="routes"><span>▱</span> السيارات والجولات</button>
+        <button class="nav-item" data-section="sales"><span>◈</span> المبيعات</button>
+        <button class="nav-item" data-section="returns"><span>↩</span> المرتجعات</button>
+        <button class="nav-item" data-section="purchases"><span>⇩</span> المشتريات</button>
+        <button class="nav-item" data-section="customers"><span>♙</span> العملاء</button>
+        <button class="nav-item" data-section="suppliers"><span>♧</span> الموردون</button>
+        <button class="nav-item" data-section="assets"><span>▰</span> الطبالي والصناديق</button>
+        <button class="nav-item" data-section="payments"><span>◉</span> المدفوعات</button>
+        <button class="nav-item" data-section="expenses"><span>◌</span> المصروفات</button>
+        <button class="nav-item" data-section="reports"><span>▥</span> التقارير</button>
+        <button class="nav-item" data-section="stocktake"><span>⊞</span> الجرد</button>
+        <button class="nav-item" data-section="invoices"><span>▤</span> الفواتير</button>
+        <button class="nav-item" data-section="users"><span>♙</span> المستخدمون</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-section="settings"><span>⚙</span> الإعدادات</button>
+        <div class="profile-mini"><div class="avatar">م</div><div><strong>محمد السريحي</strong><span>مدير النظام</span></div><span class="online-dot"></span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-start"><button class="icon-btn mobile-menu" id="mobileMenu" aria-label="القائمة">☰</button><div class="breadcrumb" id="breadcrumb">لوحة التحكم <span>/</span> نظرة عامة</div></div>
+        <div class="topbar-actions">
+          <div class="quick-search"><span>⌕</span><input id="globalSearch" placeholder="بحث سريع في النظام..." /><kbd>Ctrl K</kbd></div>
+          <button class="icon-btn" id="themeToggle" title="الوضع الداكن">☾</button>
+          <button class="icon-btn notification-btn" id="notificationBtn" title="التنبيهات">♢<i></i></button>
+          <button class="top-profile"><div class="avatar">م</div><span>محمد السريحي</span><b>⌄</b></button>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <div id="toastRegion" class="toast-region"></div>
+        <section class="page-section active" id="section-dashboard"></section>
+        <section class="page-section" id="section-products"></section>
+        <section class="page-section" id="section-warehouses"></section>
+        <section class="page-section" id="section-routes"></section>
+        <section class="page-section" id="section-sales"></section>
+        <section class="page-section" id="section-returns"></section>
+        <section class="page-section" id="section-purchases"></section>
+        <section class="page-section" id="section-customers"></section>
+        <section class="page-section" id="section-suppliers"></section>
+        <section class="page-section" id="section-assets"></section>
+        <section class="page-section" id="section-payments"></section>
+        <section class="page-section" id="section-expenses"></section>
+        <section class="page-section" id="section-reports"></section>
+        <section class="page-section" id="section-stocktake"></section>
+        <section class="page-section" id="section-invoices"></section>
+        <section class="page-section" id="section-users"></section>
+        <section class="page-section" id="section-settings"></section>
+      </div>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modal"></div></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
