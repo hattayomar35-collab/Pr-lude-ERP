@@ -156,7 +156,9 @@ function decorateNumericContent(root){
 }
 function render(){
   document.querySelectorAll('.page-section').forEach(x=>x.classList.remove('active'));
-  const section=document.querySelector(`#section-${activeSection}`);section.classList.add('active');
+  const section=document.querySelector(`#section-${activeSection}`);
+  if(!section) return;
+  section.classList.add('active');
   document.querySelectorAll('.nav-item[data-section]').forEach(x=>x.classList.toggle('active',x.dataset.section===activeSection));
   document.getElementById('breadcrumb').innerHTML=`${navNames[activeSection]} <span>/</span> ${activeSection==='dashboard'?'نظرة عامة':'إدارة '+navNames[activeSection]}`;
   const renderers={dashboard:renderDashboard,products:renderProducts,warehouses:renderWarehouses,routes:renderRoutes,drivers:renderDrivers,sales:renderSalesV2,returns:renderReturns,purchases:renderPurchasesV2,customers:renderCustomers,suppliers:renderSuppliers,assets:renderAssetsV2,payments:renderPaymentsV2,expenses:renderExpenses,reports:renderReportsV2,stocktake:renderStocktake,invoices:renderInvoices,users:renderUsers,settings:renderSettings};
@@ -529,6 +531,14 @@ function handleAction(action,el){
   if(action==='edit-catalog'){const collection=el.dataset.catalogType==='categories'?data.categories:el.dataset.catalogType==='units'?data.units:data.departments;catalogForm(el.dataset.catalogType,collection.find(row=>row.id===id));return}
   if(action==='delete-catalog'){confirmDeleteCatalog(el.dataset.catalogType,id);return}
 }
+function navigateToSection(section){
+  if(!navNames[section]) return;
+  activeSection=section;
+  searchTerm='';
+  if(window.matchMedia('(max-width: 768px)').matches) closeMobileSidebar();
+  closeModal();
+  render();
+}
 function rerenderModalLines(type){const root=document.querySelector('#lineItems');if(root){root.innerHTML=`<div class="line-item header"><span>الصنف</span><span>الكمية</span><span>السعر</span><span>الإجمالي</span><span></span></div>${lineRows(type)}`;document.getElementById('lineTotals').innerHTML=lineTotals();decorateNumericContent(document.getElementById('modal'))}}
 function showRouteDetail(r){openModal(`تفاصيل الجولة ${r.code}`,`<div class="summary-strip"><div class="summary-item"><span>الحالة</span><strong>${r.status}</strong></div><div class="summary-item"><span>السيارة</span><strong>${vehicle(r.vehicleId)?.code}</strong></div><div class="summary-item"><span>السائق</span><strong>${r.driver}</strong></div><div class="summary-item"><span>المنطقة</span><strong>${r.area}</strong></div></div><div class="timeline"><div class="timeline-item"><div class="timeline-dot">1</div><div><strong>تحميل السيارة</strong><span>${r.loaded.map(x=>productName(x.productId)+' '+x.qty).join('، ')}</span></div></div>${r.sold.length?`<div class="timeline-item"><div class="timeline-dot">2</div><div><strong>مبيعات الجولة</strong><span>${r.sold.reduce((a,x)=>a+x.qty,0)} وحدة مرتبطة بفواتير</span></div></div>`:''}<div class="timeline-item"><div class="timeline-dot">✓</div><div><strong>${r.status==='مغلقة'?'إغلاق الجولة':'الجولة مفتوحة'}</strong><span>${r.status==='مغلقة'?'تمت المطابقة والتسوية':'ما زالت البضاعة مع السيارة'}</span></div></div></div>`,`<button class="btn btn-light" data-action="close-modal">إغلاق</button>`,true)}
 function purchasePreview(p){openModal('تفاصيل فاتورة الشراء',`<div class="print-invoice"><div class="invoice-head"><div><h1>شركة السريحي</h1><p>سند استلام وفاتورة شراء</p></div><div style="text-align:left"><h1>${p.number}</h1><p>${fmtDate(p.date)}</p></div></div><div class="invoice-meta"><div><span>المورد</span><strong>${supplier(p.supplierId)?.name}</strong></div><div><span>المرجع</span><strong>${p.doc||'—'}</strong></div><div><span>حالة السداد</span><strong>${p.status}</strong></div></div><table style="min-width:0"><thead><tr><th>الصنف</th><th>الكمية</th><th>الوحدة</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${p.lines.map(l=>`<tr><td>${productName(l.productId)}</td><td>${l.qty}</td><td>${l.unit}</td><td>${money(l.price)}</td><td>${money(l.qty*l.price)}</td></tr>`).join('')}</tbody></table><div class="totals-box"><div class="total-row final"><span>الإجمالي</span><b>${money(p.total)}</b></div><div class="total-row"><span>المدفوع</span><b>${money(p.paid)}</b></div><div class="total-row"><span>المتبقي</span><b>${money(p.total-p.paid)}</b></div></div></div>`,`<button class="btn btn-light" data-action="close-modal">إغلاق</button><button class="btn btn-primary" data-action="print-modal">⎙ طباعة</button>${p.status==='ملغاة'?'':'<button class="btn btn-danger" data-action="cancel-purchase" data-id="'+p.id+'">إلغاء المستند</button>'}`,true)}
@@ -581,7 +591,7 @@ document.addEventListener('click',e=>{
   const pager=e.target.closest('[data-page]');
   if(pager){pageState[pager.dataset.page]=Number(pager.dataset.pageNumber)||1;render();return}
   const nav=e.target.closest('[data-section]');
-  if(nav){activeSection=nav.dataset.section;searchTerm='';document.getElementById('sidebar').classList.remove('open');render();return}
+  if(nav){navigateToSection(nav.dataset.section);return}
   const report=e.target.closest('[data-report]');
   if(report){activeReport=report.dataset.report;render();return}
   const action=e.target.closest('[data-action]');
@@ -601,8 +611,20 @@ document.addEventListener('input',e=>{
   if(e.target.classList.contains('route-qty')||e.target.classList.contains('route-price')){const form=e.target.closest('form'),total=[...form.querySelectorAll('.route-sale-line')].reduce((a,row)=>a+(Number(row.querySelector('.route-qty').value)||0)*(Number(row.querySelector('.route-price').value)||0),0),out=form.querySelector('#routeSaleTotal');if(out)out.innerHTML=money(total);decorateNumericContent(document.getElementById('modal'))}
 });
 document.getElementById('themeToggle').addEventListener('click',()=>{document.body.classList.toggle('dark');data.meta.theme=document.body.classList.contains('dark')?'dark':'light';save()});
-document.getElementById('mobileMenu').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
-document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){searchTerm=e.target.value.trim();activeSection='products';render()}});
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.getElementById('mobileMenu').setAttribute('aria-expanded','false');
+}
+function toggleMobileSidebar(){
+  const isOpen=document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open',isOpen);
+  document.getElementById('mobileMenu').setAttribute('aria-expanded',String(isOpen));
+}
+document.getElementById('mobileMenu').addEventListener('click',toggleMobileSidebar);
+document.getElementById('sidebarOverlay').addEventListener('click',closeMobileSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileSidebar()});
+document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){searchTerm=e.target.value.trim();navigateToSection('products')}});
 document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
 document.getElementById('notificationBtn').addEventListener('click',()=>showToast(data.routes.filter(r=>r.status==='مفتوحة').length?'لديك جولات مفتوحة تحتاج إلى إغلاق':'لا توجد تنبيهات جديدة',data.routes.some(r=>r.status==='مفتوحة')?'error':'success'));
 document.querySelector('.top-profile').addEventListener('click',()=>showToast('المستخدم الحالي: محمد السريحي'));

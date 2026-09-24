@@ -15,7 +15,7 @@ td:nth-child(n+2),th:nth-child(n+2),td .number,th .number{direction:ltr;unicode-
 .metric-value{display:block}
 .quick-search input,.search-box input{direction:rtl}
 
-@media(max-width:800px){
+@media(max-width:768px){
   .topbar{gap:8px;overflow:hidden}
   .topbar-start{min-width:0;flex:1;overflow:hidden}
   .topbar-actions{width:145px;min-width:145px;flex:0 0 145px;justify-content:flex-start}
